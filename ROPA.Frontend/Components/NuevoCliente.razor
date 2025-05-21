@@ -1,0 +1,55 @@
+﻿
+
+﻿
+@using BlazorTiendaRopa.Entidades
+@using BlazorTiendaRopa.Negocio
+@inject ClienteNegocio clienteNegocio
+@inject NavigationManager NavigationManager
+
+<h3>Nuevo Cliente</h3>
+
+<EditForm Model="@nuevoCliente" OnValidSubmit="@GuardarNuevoCliente">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <div>
+            <label for="Id">Cedula:    </label>
+            <InputNumber id="Id" @bind-Value="nuevoCliente.Id" size="50" />
+        </div>
+        <div>
+            <label for="nombre">Nombre:    </label>
+            <InputText id="nombre" @bind-Value="nuevoCliente.Nombre" size="50" />
+        </div>
+        <div>
+            <label for="correo">Correo: </label>
+            <InputText id="correo" @bind-Value="nuevoCliente.Correo" size="50" />
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+<br />
+<br />
+@resultado
+
+@code {
+    private Cliente nuevoCliente = new Cliente();
+    string resultado = " ";
+
+    private async Task GuardarNuevoCliente()
+    {
+        bool guardado = await clienteNegocio.GuardarCliente(nuevoCliente);
+        if (guardado)
+        {
+            Console.WriteLine("Materia guardada exitosamente.");
+            resultado = " Materia guardada ";
+        }
+        else
+        {
+            Console.WriteLine("Error al guardar la materia.");
+            resultado = " No se pudo guardar ";
+        }
+    }
+}
