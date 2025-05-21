@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35825.156 d17.13
+VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROPA.Backend", "ROPA.Backend\ROPA.Backend.csproj", "{4CD17D9C-5779-47FB-8DF8-581F0CD82087}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROPA.Shared", "ROPA.Shared\ROPA.Shared.csproj", "{86F3B5EA-DF0E-41BF-A486-4D16605E46CC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROPA.Frontend", "ROPA.Frontend\ROPA.Frontend.csproj", "{36AA0F81-FD42-49C3-B07C-8E63E08518C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{86F3B5EA-DF0E-41BF-A486-4D16605E46CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86F3B5EA-DF0E-41BF-A486-4D16605E46CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86F3B5EA-DF0E-41BF-A486-4D16605E46CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{36AA0F81-FD42-49C3-B07C-8E63E08518C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{36AA0F81-FD42-49C3-B07C-8E63E08518C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{36AA0F81-FD42-49C3-B07C-8E63E08518C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{36AA0F81-FD42-49C3-B07C-8E63E08518C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
