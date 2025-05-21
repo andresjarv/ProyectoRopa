@@ -1,0 +1,40 @@
+﻿@page "/productos"
+@inject HttpClient Http
+
+<h3>Gestión de Productos</h3>
+
+<EditForm Model="@productoActual" OnValidSubmit="@GuardarProducto">
+    <div class="form-group">
+        <label>Nombre:</label>
+        <InputText @bind-Value="productoActual.Nombre" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+@code {
+    private Producto productoActual = new();
+    private List<Producto> productos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = await Http.GetFromJsonAsync<List<Producto>>("api/productos");
+    }
+
+    private async Task GuardarProducto()
+    {
+        if (productoActual.Id == 0)
+            await Http.PostAsJsonAsync("api/productos", productoActual);
+        else
+            await Http.PutAsJsonAsync($"api/productos/{productoActual.Id}", productoActual);
+
+        productoActual = new();
+        productos = await Http.GetFromJsonAsync<List<Producto>>("api/productos");
+    }
+
+    private async Task EliminarProducto(int id)
+    {
+        await Http.DeleteAsync($"api/productos/{id}");
+        productos = await Http.GetFromJsonAsync<List<Producto>>("api/productos");
+    }
+}
