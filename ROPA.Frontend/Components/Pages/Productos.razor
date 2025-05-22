@@ -1,40 +1,118 @@
 ﻿@page "/productos"
-@inject HttpClient Http
+@using ROPA.Frontend.Models
+@using ROPA.Frontend.Services
+@inject IProductoService productoService
 
-<h3>Gestión de Productos</h3>
+<h3>Productos</h3>
 
-<EditForm Model="@productoActual" OnValidSubmit="@GuardarProducto">
-    <div class="form-group">
-        <label>Nombre:</label>
-        <InputText @bind-Value="productoActual.Nombre" class="form-control" />
+@if (productos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in productos)
+            {
+                <tr>
+                    <td>@p.Nombre</td>
+                    <td>@p.Precio</td>
+                    <td>@p.Stock</td>
+                    <td>
+                        <button class="btn btn-warning" @onclick="() => Editar(p)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => Eliminar(p.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h4>@(esEditar ? "Editar Producto" : "Nuevo Producto")</h4>
+<EditForm Model="@modelo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Nombre</label>
+        <InputText class="form-control" @bind-Value="modelo.Nombre" />
+    </div>
+    <div class="mb-3">
+        <label>Precio</label>
+        <InputNumber class="form-control" @bind-Value="modelo.Precio" />
+    </div>
+    <div class="mb-3">
+        <label>Stock</label>
+        <InputNumber class="form-control" @bind-Value="modelo.Stock" />
     </div>
 
-    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button class="btn btn-success" type="submit">Guardar</button>
+    <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
 </EditForm>
 
 @code {
-    private Producto productoActual = new();
-    private List<Producto> productos = new();
+    private List<Producto> productos;
+    private Producto modelo = new();
+    private bool esEditar = false;
 
     protected override async Task OnInitializedAsync()
     {
-        productos = await Http.GetFromJsonAsync<List<Producto>>("api/productos");
+        await CargarProductos();
     }
 
-    private async Task GuardarProducto()
+    async Task CargarProductos()
     {
-        if (productoActual.Id == 0)
-            await Http.PostAsJsonAsync("api/productos", productoActual);
+        productos = await productoService.ObtenerProductos();
+    }
+
+    void Editar(Producto producto)
+    {
+        modelo = new Producto
+            {
+                Id = producto.Id,
+                Nombre = producto.Nombre,
+                Precio = producto.Precio,
+                Stock = producto.Stock
+            };
+        esEditar = true;
+    }
+
+    async Task Eliminar(int id)
+    {
+        await productoService.EliminarProducto(id);
+        await CargarProductos();
+    }
+
+    async Task Guardar()
+    {
+        if (esEditar)
+        {
+            await productoService.ActualizarProducto(modelo);
+        }
         else
-            await Http.PutAsJsonAsync($"api/productos/{productoActual.Id}", productoActual);
+        {
+            await productoService.CrearProducto(modelo);
+        }
 
-        productoActual = new();
-        productos = await Http.GetFromJsonAsync<List<Producto>>("api/productos");
+        modelo = new Producto();
+        esEditar = false;
+        await CargarProductos();
     }
 
-    private async Task EliminarProducto(int id)
+    void Cancelar()
     {
-        await Http.DeleteAsync($"api/productos/{id}");
-        productos = await Http.GetFromJsonAsync<List<Producto>>("api/productos");
+        modelo = new Producto();
+        esEditar = false;
     }
 }
