@@ -1,40 +1,49 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using WebApi.ApiService.Negocio;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Agregar controladores
 builder.Services.AddControllers();
+
+// Swagger con OpenAPI
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddCors(options =>
+builder.Services.AddSwaggerGen(c =>
 {
-    options.AddPolicy("AllowSpecificOrigins", policy =>
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
-        policy.WithOrigins("https://localhost:7130", "http://localhost:3000") // Agrega los orígenes permitidos
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        Title = "API de Ropa",
+        Version = "v1",
+        Description = "Una API para administrar productos y clientes"
     });
 });
 
-var connectionString = builder.Configuration.GetConnectionString("SqlServer");
-
-builder.Services.AddSingleton(connectionString);
-builder.Services.AddSingleton<IClienteService, ClienteService>();
-builder.Services.AddSingleton<IProductoService, ProductoService>();
+// Agrega CORS si consumes desde otro puerto (ej: Blazor)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirFrontend",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:5002") // puerto del frontend
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API de Ropa v1");
+        c.RoutePrefix = "swagger"; // asegura que /swagger/index.html funcione
+    });
 }
 
 app.UseHttpsRedirection();
+app.UseCors("PermitirFrontend");
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
