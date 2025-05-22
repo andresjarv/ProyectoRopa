@@ -9,6 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+    {
+        policy.WithOrigins("https://localhost:7130", "http://localhost:3000") // Agrega los orígenes permitidos
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var connectionString = builder.Configuration.GetConnectionString("SqlServer");
 
